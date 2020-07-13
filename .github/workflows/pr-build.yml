@@ -37,34 +37,31 @@ jobs:
         run: |
           msbuild /p:Configuration=Release /p:Platform=x64 ${{ github.workspace }}\Source\Dolphin.sln
       - name: "Package Netplay"
-        if: success()
-        shell: bash
         working-directory: ${{ github.workspace }}
         run: |
-          FILE_NAME=${{ env.CURR_DATE }}-${{ env.GIT_HASH }}-${{ env.GIT_TAG }}-win64-netplay.tar.gz
-          echo "::set-env name=FILE_NAME::${FILE_NAME}"
-          cp -R ./Overwrite/* ./Binary/x64/
+          $env:FILE_NAME="${{ env.CURR_DATE }}-${{ env.OBS_GIT_HASH }}-${{ env.OBS_GIT_TAG }}-win64-netplay.7z"
           mkdir artifact
-          cd ./Binary/x64/
-          touch portable.txt
-          zip -r "${FILE_NAME}" .
-          mv "${FILE_NAME}" ../../artifact/
+          Xcopy /Y /E /I .\Overwrite\Sys .\Binary\x64\Sys
+          Xcopy /Y /E /I .\Overwrite\Sys .\Binary\x64\User
+          cd .\Binary\x64\
+          fsutil file createnew portable.txt 0
+          7z a ${env:FILE_NAME} .\*
+          move ${env:FILE_NAME} ..\..\artifact\
       - name: "Build Playback Dolphin"
         shell: cmd
         run: |
           msbuild /p:Configuration=ReleasePlayback /p:Platform=x64 ${{ github.workspace }}\Source\Dolphin.sln
       - name: "Package Playback"
         if: success()
-        shell: bash
         working-directory: ${{ github.workspace }}
         run: |
+          $env:FILE_NAME="${{ env.CURR_DATE }}-${{ env.OBS_GIT_HASH }}-${{ env.OBS_GIT_TAG }}-win64-playback.7z"
           git clone https://github.com/project-slippi/slippi-desktop-app
-          cd ./Binary/x64/
-          cp -Rf ../../slippi-desktop-app/app/dolphin-dev/overwrite/Sys .
-          cp -Rf ../../slippi-desktop-app/app/dolphin-dev/overwrite/User .
-          FILE_NAME=${{ env.CURR_DATE }}-${{ env.GIT_HASH }}-${{ env.GIT_TAG }}-win64-playback.zip
-          zip -r "${FILE_NAME}" .
-          mv "${FILE_NAME}" ../../artifact/
+          cd .\Binary\x64\
+          Xcopy /Y /E /I ../../slippi-desktop-app/app/dolphin-dev/overwrite/Sys .\Sys
+          Xcopy /Y /E /I ../../slippi-desktop-app/app/dolphin-dev/overwrite/User .\User
+          7z a ${env:FILE_NAME} .\*
+          move ${env:FILE_NAME} ..\..\artifact\
       - name: "Publish"
         if: success()
         uses: actions/upload-artifact@v2-preview

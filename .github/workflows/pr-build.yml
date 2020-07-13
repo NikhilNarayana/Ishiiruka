@@ -42,7 +42,7 @@ jobs:
           $env:FILE_NAME="${{ env.CURR_DATE }}-${{ env.OBS_GIT_HASH }}-${{ env.OBS_GIT_TAG }}-win64-netplay.7z"
           mkdir artifact
           Xcopy /Y /E /I .\Overwrite\Sys .\Binary\x64\Sys
-          Xcopy /Y /E /I .\Overwrite\Sys .\Binary\x64\User
+          Xcopy /Y /E /I .\Overwrite\User .\Binary\x64\User
           cd .\Binary\x64\
           fsutil file createnew portable.txt 0
           7z a ${env:FILE_NAME} .\*

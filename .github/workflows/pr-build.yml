@@ -54,17 +54,17 @@ jobs:
         run: |
           msbuild /p:Configuration=ReleasePlayback /p:Platform=x64 ${{ github.workspace }}\Source\Dolphin.sln
       - name: "Package Playback"
-          if: success()
-          shell: bash
-          working-directory: ${{ github.workspace }}
-          run: |
-            git clone https://github.com/project-slippi/slippi-desktop-app
-            cd ./Binary/x64/
-            cp -Rf ../../slippi-desktop-app/app/dolphin-dev/overwrite/Sys .
-            cp -Rf ../../slippi-desktop-app/app/dolphin-dev/overwrite/User .
-            FILE_NAME=${{ env.CURR_DATE }}-${{ env.GIT_HASH }}-${{ env.GIT_TAG }}-win64-playback.zip
-            zip -r "${FILE_NAME}" .
-            mv "${FILE_NAME}" ../../artifact/
+        if: success()
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        run: |
+          git clone https://github.com/project-slippi/slippi-desktop-app
+          cd ./Binary/x64/
+          cp -Rf ../../slippi-desktop-app/app/dolphin-dev/overwrite/Sys .
+          cp -Rf ../../slippi-desktop-app/app/dolphin-dev/overwrite/User .
+          FILE_NAME=${{ env.CURR_DATE }}-${{ env.GIT_HASH }}-${{ env.GIT_TAG }}-win64-playback.zip
+          zip -r "${FILE_NAME}" .
+          mv "${FILE_NAME}" ../../artifact/
       - name: "Publish"
         if: success()
         uses: actions/upload-artifact@v2-preview
